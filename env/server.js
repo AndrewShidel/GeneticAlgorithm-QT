@@ -16,30 +16,19 @@ var module = require(tester);
 
 var express = require('express'),
     app = express();
-app.listen(3000);
 
-//Setup globals.
-var winners = JSON.parse(fs.readFileSync("wins.json")),
-	lossers = JSON.parse(fs.readFileSync("losses.json")),
-	numWinners = Object.keys(winners).length,
-	numLossers = Object.keys(lossers).length,
-	lossesWon = 0, winsLost=0,
-	win=0,
-	loss=0,
-	difficulty=0,
-	massExtinctions = 0;
 
 var alphebet = "0123456789abcdefghijklmnopqrstuvwxyz";
-var stack=new Array();
+GLOBAL.stack=new Array();
 stack.push("0");
 var sibCount=0;
 
 app.get('/stat/', function(req, res) {
 	var html = "<html>"
-	html+="<head></head><body><h3>Wins: "+win+"    Losses: "+loss+"   Population: "+stack.length+"</h3>";
-	html+="<br><br><h3>Mass Extinctions: "+massExtinctions+"</h3>"
-	html+="<h3>Difficulty: "+difficulty+"</h3>"
-	html+="<br><br><h3>Losses Won: "+lossesWon+"</h3><h3>Wins lost: "+winsLost+"</h3>"
+	html+="<head></head><body><h3>Wins: "+module.win+"    Losses: "+module.loss+"   Population: "+stack.length+"</h3>";
+	html+="<br><br><h3>Mass Extinctions: "+module.massExtinctions+"</h3>"
+	html+="<h3>Difficulty: "+module.difficulty+"</h3>"
+	html+="<br><br><h3>Losses Won: "+module.lossesWon+"</h3><h3>Wins lost: "+module.winsLost+"</h3>"
 	html+="</body></html>";
 	res.send(html);
 });
@@ -56,7 +45,7 @@ main();
 //Loops to infinity, here is where the bulk of the work is done.
 function looper(){
 	var name = stack.slice(-1)[0],
-		question = getQuestion(),
+		question = module.getQuestion(),
 		newId = nextName(name, false);
 	if (newId==null) return fail(name);
 	if (newId.length>=250) {reset(); return;}
@@ -64,9 +53,9 @@ function looper(){
 		if (res==null || res==undefined || res=="") {fail(); return;};
 		res = res.split("|");
 		
-		if (res[0]==""+getAnswer(question)){
-			win++
-			if (lossers.getKeyByValue(res[0]) != null) lossesWon++;
+		if (res[0]==""+module.getAnswer(question)){
+			module.win++
+			if (module.lossers.getKeyByValue(res[0]) != null) module.lossesWon++;
 			//Make a new org, and make it executable.
 			command = "./maker ../org/0/ "+newId+" "+name+" "+res[1]+" "+res[2]
 				+" && chmod +x ../org/0/"+newId;
@@ -78,8 +67,8 @@ function looper(){
 				//looper();
 			});
 		}else{
-			loss++;
-			if (winners.getKeyByValue(res[0]) != null) winsLost++;
+			module.loss++;
+			if (module.winners.getKeyByValue(res[0]) != null) module.winsLost++;
 			fail();
 			
 		}
@@ -104,7 +93,7 @@ function nextName(parent, newGen){
 }
 
 function reset(){
-	massExtinctions++;
+	module.massExtinctions++;
 	console.log("Reseting");
 	var i=0;
 	var tempStack = stack;
@@ -147,7 +136,7 @@ function ask(askId, question, callback){
 }
 
 //Get the next question.
-function getQuestion() {
+/*function getQuestion() {
 	var question;
 	if (stack.length<=3){
 		question=winners[Math.floor(Math.random()*numWinners)];
@@ -172,7 +161,7 @@ function getAnswer(i){
 	if (i%2==0) i = i*2;
 
 	return i;
-}
+}*/
 
 function runFile(){
 	//child_process.execFile(file, [args], [options], [callback])
