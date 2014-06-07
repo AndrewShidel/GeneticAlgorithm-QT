@@ -3,8 +3,8 @@ GeneticAlgorithm
 
 
 To Run:
-*run "npm install express" from the "env" dirctory
-*run "node server"
+* run "npm install express" from the "env" dirctory
+* run "node server"
 
 To delete compiled files run "make reset" from env.
 
