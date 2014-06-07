@@ -34,12 +34,14 @@ app.get('/stat/', function(req, res) {
 
 //Main function where things start.
 function main(){
-	runCommand("gcc -o ../org/0/0 ../org/0/0.c",function(){
+
+	runCommand("gcc -o ../org/0/0 ../org/0/0.c && g++ -o maker maker.cpp",function(){
 		looper();
 	});
 }
 main();
 
+//Loops to infinity, here is where the bulk of the work is done.
 function looper(){
 	var name = stack.slice(-1)[0],
 		question = getQuestion(),
