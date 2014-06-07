@@ -2,6 +2,18 @@
 var fs = require('fs');
 var files = ["0"];
 
+var tester="./0Tester.js", org="../org/0/0.c";
+
+if (process.argv.length>=4){
+	org=process.argv[2]
+}
+var path=org.substring(0,org.lastIndexOf("/")+1);
+if (process.argv.length>=3){
+	tester=process.argv[3];
+}
+var module = require(tester);
+
+
 var express = require('express'),
     app = express();
 app.listen(3000);
