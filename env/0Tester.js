@@ -1,5 +1,6 @@
 var fs = require('fs');
 
+//Set all of the statistics variables.
 var winners = JSON.parse(fs.readFileSync("wins.json")),
 	lossers = JSON.parse(fs.readFileSync("losses.json")),
 	numWinners = Object.keys(winners).length,
@@ -38,6 +39,7 @@ function getQuestion() {
 	return question;
 }
 
+//Export all variables and functions.
 exports.getAnswer = getAnswer;
 exports.getQuestion = getQuestion;
 exports.winners = winners

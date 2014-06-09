@@ -1,28 +1,52 @@
-//Imports.
-var fs = require('fs');
-var files = ["0"];
-
-var tester="./0Tester.js", org="../org/0/0.c";
-
-if (process.argv.length>=4){
-	org=process.argv[2]
-}
-var path=org.substring(0,org.lastIndexOf("/")+1);
-if (process.argv.length>=3){
-	tester=process.argv[3];
-}
-var module = require(tester);
-
-
-var express = require('express'),
+var fs = require('fs'),
+	files = ["0"],
+	express = require('express'),
     app = express();
 
+app.listen(3000);
 
 var alphebet = "0123456789abcdefghijklmnopqrstuvwxyz";
 GLOBAL.stack=new Array();
 stack.push("0");
 var sibCount=0;
+var resuming = false;
 
+//These will be the default command line arguments if none are provided.
+var tester="./0Tester.js", org="../org/0/0.c", module="";
+
+//If we are not resuming, and there are command line arguments.
+if (process.argv.length > 1 && process.argv[2] != "resume"){
+	console.log(process.argv[2]);
+	if (process.argv.length>=4){
+		org=process.argv[2]
+	}
+	var path=org.substring(0,org.lastIndexOf("/")+1);
+	if (process.argv.length>=3){
+		tester=process.argv[3];
+	}
+}
+//Import the test module.
+module = require(tester);
+
+//If server was called with the parameter "resume", then resume from pause.json
+if (process.argv.length > 2 && process.argv[2] == "resume"){
+	resuming = true;
+	var mod = JSON.parse(fs.readFileSync("pause.json"));
+	module.winners = mod.winners
+	module.lossers = mod.lossers
+	module.numWinners = mod.numWinners
+	module.numLossers = mod.numLossers
+	module.lossesWon = mod.lossesWon
+	module.winsLost=mod.winsLost
+	module.win=mod.win
+	module.loss=mod.loss
+	module.difficulty=mod.difficulty
+	module.massExtinctions = mod.massExtinctions
+	stack = mod.stack;
+	sibCount = mod.sibCount
+}
+
+//Generate some HTML to display statistics.
 app.get('/stat/', function(req, res) {
 	var html = "<html>"
 	html+="<head></head><body><h3>Wins: "+module.win+"    Losses: "+module.loss+"   Population: "+stack.length+"</h3>";
@@ -33,12 +57,34 @@ app.get('/stat/', function(req, res) {
 	res.send(html);
 });
 
+//Read from standard in for the pause command.
+process.stdin.setEncoding('utf8');
+process.stdin.on('readable', function() {
+  var chunk = process.stdin.read();
+  if (chunk !== null) {
+  	console.log("something: "+chunk)
+    if (chunk == "pause\n") pause();
+  }
+});
+
+//Saves the state of execution in "pause.json", and exits the program.
+function pause(){
+	console.log("pausing...");
+	module.stack = stack;
+	module.sibCount = sibCount;
+	fs.writeFileSync("pause.json", JSON.stringify(module));
+	process.exit(1);
+}
+
 //Main function where things start.
 function main(){
-
-	runCommand("gcc -o ../org/0/0 ../org/0/0.c && g++ -o maker maker.cpp",function(){
+	if (resuming){
 		looper();
-	});
+	}else{
+		runCommand("gcc -o ../org/0/0 ../org/0/0.c && g++ -o maker maker.cpp",function(){
+			looper();
+		});
+	}
 }
 main();
 
@@ -75,14 +121,17 @@ function looper(){
 	});
 }
 
+//Remove the failed program, and continue with the next item on the stack.
 function fail(){
-	//stack.pop();
 	sibCount=0;
 	fs.unlink("../org/0/"+stack.pop(), function (err) {
 		looper();
 	});
 }
 
+//Get the next filename based on the parent's name
+//parent: The and of the parent's executable.
+//newGen: True if this program is the first of a new generation.
 function nextName(parent, newGen){
 	//if (parent=="0")return "0"
 	if (sibCount>=alphebet.length-1) return null;
@@ -92,6 +141,7 @@ function nextName(parent, newGen){
 	return current+sibCount;
 }
 
+//Causes a mass extinction, leaving nly alphebet.length number of files.
 function reset(){
 	module.massExtinctions++;
 	console.log("Reseting");
@@ -102,6 +152,7 @@ function reset(){
 	looper();
 }
 
+//Called by reset to loop through the stack and delete files.
 function resetLoop(tempStack, i){
 	if (tempStack.length>0 && i<alphebet.length){
 		stack.unshift(alphebet[i]);
@@ -133,38 +184,6 @@ function ask(askId, question, callback){
 		callback(res);
 	});
 	
-}
-
-//Get the next question.
-/*function getQuestion() {
-	var question;
-	if (stack.length<=3){
-		question=winners[Math.floor(Math.random()*numWinners)];
-	}else{
-		if (Math.random()<=difficulty){
-			question=lossers[Math.floor(Math.random()*numLossers)];
-		}else{
-			question=winners[Math.floor(Math.random()*numWinners)];
-		}
-		difficulty=stack.length/100;
-	}
-	return question;
-}
-
-//Get the answer to a question.
-function getAnswer(i){
-	if (i%7==1) return i*7;
-	if (i%6==0) return i*6;
-	if (i%5==1) return i*5;
-	if (i%4==0) return i*4;
-	if (i%3==1) i = i*3;
-	if (i%2==0) i = i*2;
-
-	return i;
-}*/
-
-function runFile(){
-	//child_process.execFile(file, [args], [options], [callback])
 }
 
 Object.prototype.getKeyByValue = function( value ) {
