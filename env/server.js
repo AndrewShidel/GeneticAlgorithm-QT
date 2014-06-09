@@ -73,7 +73,7 @@ function pause(){
 	module.stack = stack;
 	module.sibCount = sibCount;
 	fs.writeFileSync("pause.json", JSON.stringify(module));
-	process.exit(1);
+	process.exit(0);
 }
 
 //Main function where things start.
