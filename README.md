@@ -14,6 +14,9 @@ To pause:
 To resume:
 * Run "make resume" from the env directory
 
+To quit:
+* Type "kill" while the program is running.
+
 To delete compiled files:
 * Run "make reset" from env.
 * This is done every time "make start" is run. 
