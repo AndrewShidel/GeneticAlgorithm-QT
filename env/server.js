@@ -12,7 +12,7 @@ var sibCount=0;
 var resuming = false;
 
 //These will be the default command line arguments if none are provided.
-var tester="./0Tester.js", org="../org/0/0.c", module="";
+var tester="./0Tester.js", org="../org/0/0.c", module="", path="";
 
 //If we are not resuming, and there are command line arguments.
 if (process.argv.length > 1 && process.argv[2] != "resume"){
@@ -20,11 +20,13 @@ if (process.argv.length > 1 && process.argv[2] != "resume"){
 	if (process.argv.length>=4){
 		org=process.argv[2]
 	}
-	var path=org.substring(0,org.lastIndexOf("/")+1);
+	
 	if (process.argv.length>=3){
 		tester=process.argv[3];
 	}
 }
+path=org.substring(0,org.lastIndexOf("/")+1);
+
 //Import the test module.
 module = require(tester);
 
@@ -42,6 +44,8 @@ if (process.argv.length > 2 && process.argv[2] == "resume"){
 	module.loss=mod.loss
 	module.difficulty=mod.difficulty
 	module.massExtinctions = mod.massExtinctions
+	path=mod.path;
+	org=mod.org;
 	stack = mod.stack;
 	sibCount = mod.sibCount
 }
@@ -57,13 +61,14 @@ app.get('/stat/', function(req, res) {
 	res.send(html);
 });
 
-//Read from standard in for the pause command.
+//Read from standard in for the pause and kill commands.
 process.stdin.setEncoding('utf8');
 process.stdin.on('readable', function() {
   var chunk = process.stdin.read();
   if (chunk !== null) {
-  	console.log("something: "+chunk)
     if (chunk == "pause\n") pause();
+    else if (chunk == "kill\n") kill();
+    else console.log("Error: "+chunk.substring(0,chunk.length-1)+" is not a valid command.");
   }
 });
 
@@ -72,8 +77,18 @@ function pause(){
 	console.log("pausing...");
 	module.stack = stack;
 	module.sibCount = sibCount;
+	module.path=path;
+	module.org=org;
 	fs.writeFileSync("pause.json", JSON.stringify(module));
 	process.exit(0);
+}
+
+//Kills the current enviroment, erasing all program data.
+function kill(){
+	console.log("Killing the program...");
+	runCommand("make reset", function(){
+		process.exit(0);
+	});
 }
 
 //Main function where things start.
@@ -81,7 +96,9 @@ function main(){
 	if (resuming){
 		looper();
 	}else{
-		runCommand("gcc -o ../org/0/0 ../org/0/0.c && g++ -o maker maker.cpp",function(){
+		var command = "gcc -o "+path+"0 "+org+" && g++ -o maker maker.cpp";
+		console.log(command);
+		runCommand(command,function(){
 			looper();
 		});
 	}
@@ -103,8 +120,8 @@ function looper(){
 			module.win++
 			if (module.lossers.getKeyByValue(res[0]) != null) module.lossesWon++;
 			//Make a new org, and make it executable.
-			command = "./maker ../org/0/ "+newId+" "+name+" "+res[1]+" "+res[2]
-				+" && chmod +x ../org/0/"+newId;
+			command = "./maker "+path+" "+newId+" "+name+" "+res[1]+" "+res[2]
+				+" && chmod +x "+path+newId;
 			runCommand(command, function(res){
 				stack.unshift(newId);
 				//setTimeout(function(){
@@ -124,7 +141,7 @@ function looper(){
 //Remove the failed program, and continue with the next item on the stack.
 function fail(){
 	sibCount=0;
-	fs.unlink("../org/0/"+stack.pop(), function (err) {
+	fs.unlink(path+stack.pop(), function (err) {
 		looper();
 	});
 }
@@ -156,15 +173,15 @@ function reset(){
 function resetLoop(tempStack, i){
 	if (tempStack.length>0 && i<alphebet.length){
 		stack.unshift(alphebet[i]);
-		var temp = "../org/0/"+tempStack.pop();
+		var temp = path+tempStack.pop();
 		console.log("ran: "+temp);
-		fs.renameSync(temp, "../org/0/"+alphebet[i]);
+		fs.renameSync(temp, path+alphebet[i]);
 		resetLoop(tempStack,++i);
 	}
 
 	//Delete the remaining files.
 	if (tempStack.length>0){
-		fs.unlinkSync("../org/0/"+tempStack.pop());
+		fs.unlinkSync(path+tempStack.pop());
 		resetLoop(tempStack,++i);
 	}
 
@@ -179,7 +196,7 @@ function make(id){
 //Ask a org a question.
 function ask(askId, question, callback){
 	//Ask the question
-	var command = "../org/0/"+askId+" "+askId+" "+question;
+	var command = path+askId+" "+askId+" "+question;
 	runCommand(command,function(res){
 		callback(res);
 	});
