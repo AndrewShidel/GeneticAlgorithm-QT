@@ -1,15 +1,5 @@
 var fs = require('fs');
-
-//Set all of the statistics variables.
-var winners = JSON.parse(fs.readFileSync("wins.json")),
-	lossers = JSON.parse(fs.readFileSync("losses.json")),
-	numWinners = Object.keys(winners).length,
-	numLossers = Object.keys(lossers).length,
-	lossesWon = 0, winsLost=0,
-	win=0,
-	loss=0,
-	difficulty=0,
-	massExtinctions = 0;
+var base = require('./TestBase.js').data;
 
 //Get the answer to a question.
 function getAnswer(i){
@@ -27,28 +17,18 @@ function getAnswer(i){
 function getQuestion() {
 	var question;
 	if (stack.length<=3){
-		question=winners[Math.floor(Math.random()*numWinners)];
+		question=base.winners[Math.floor(Math.random()*base.numWinners)];
 	}else{
-		if (Math.random()<=difficulty){
-			question=lossers[Math.floor(Math.random()*numLossers)];
+		if (Math.random()<=base.difficulty){
+			question=base.lossers[Math.floor(Math.random()*base.numLossers)];
 		}else{
-			question=winners[Math.floor(Math.random()*numWinners)];
+			question=base.winners[Math.floor(Math.random()*base.numWinners)];
 		}
-		difficulty=stack.length/100;
+		base.difficulty=stack.length/100;
 	}
 	return question;
 }
 
-//Export all variables and functions.
 exports.getAnswer = getAnswer;
 exports.getQuestion = getQuestion;
-exports.winners = winners
-exports.lossers = lossers
-exports.numWinners = numWinners
-exports.numLossers = numLossers
-exports.lossesWon = lossesWon
-exports.winsLost=winsLost
-exports.win=win
-exports.loss=loss
-exports.difficulty=difficulty
-exports.massExtinctions = massExtinctions
+exports.data = base;
