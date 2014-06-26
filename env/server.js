@@ -5,6 +5,9 @@ var fs = require('fs'),
 
 app.listen(3000);
 
+var startDate = new Date();
+var procSize = 0;
+
 var alphebet = "0123456789abcdefghijklmnopqrstuvwxyz";
 GLOBAL.stack=new Array();
 stack.push("0");
@@ -56,7 +59,7 @@ app.get('/stat/', function(req, res) {
 	html+="<head></head><body><h3>Wins: "+module.data.win+"    Losses: "+module.data.loss+"   Population: "+stack.length+"</h3>";
 	html+="<br><br><h3>Mass Extinctions: "+module.data.massExtinctions+"</h3>"
 	html+="<h3>Difficulty: "+module.data.difficulty+"</h3>"
-	html+="<br><br><h3>Losses Won: "+module.data.lossesWon+"</h3><h3>Wins lost: "+module.data.winsLost+"</h3>"
+	html+="<br><br><h3>Losses Won: "+module.data.lossesWon+"</h3><h3>Wins lost: "+module.data.winsLost+"</h3>"+module.data.treeSize+"<br>"+((new Date()).getTime() - startDate.getTime())
 	html+="</body></html>";
 	res.send(html);
 });
@@ -99,7 +102,7 @@ function main(){
 		var command = "gcc -o "+path+"0 "+org+" && g++ -o maker maker.cpp";
 		console.log(command);
 		runCommand(command,function(){
-			looper();
+			looper(0);
 		});
 	}
 }
@@ -107,45 +110,57 @@ main();
 
 //Loops to infinity, here is where the bulk of the work is done.
 function looper(){
-	if (stack.length == 0){
-		setTimeout(looper, 10);
+	/*if (stack.length == 0){
+		setTimeout(function(){looper()}, 10);
 		return;
+	}*/
+	var diff = ((new Date()).getTime() - startDate.getTime());
+	if (diff > 20000){
+		console.log("Time: " + diff + "  Pop: " + module.data.treeSize)
+		kill();
 	}
-	var name = stack.slice(-1)[0],
+
+	if (procSize>15) return setTimeout(function(){looper()},10);
+
+	//var name = stack.slice(-1)[0],
+	var name = stack.pop(),
 		question = module.getQuestion(),
 		newId = nextName(name, false);
 	if (newId==null) return fail(name);
 	if (newId.length>=250) {reset(); return;}
 	ask( name,question, function(res){
-		if (res==null || res==undefined || res=="") {fail(); return;};
+		if (res==null || res==undefined || res=="") {
+			return fail(name);
+		};
 		res = res.split("|");
 		
 		if (res[0]==""+module.getAnswer(question)){
+			stack.push(name)
 			module.data.win++
 			if (module.data.lossers.getKeyByValue(res[0]) != null) module.data.lossesWon++;
 			//Make a new org, and make it executable.
 			command = "./maker "+path+" "+newId+" "+name+" "+res[1]+" "+res[2]
 				+" && chmod +x "+path+newId;
 			runCommand(command, function(res){
+				module.data.treeSize += 1;
 				stack.unshift(newId);
-				//setTimeout(function(){
-					
-				//}, 500);
-				//looper();
 			});
-			looper();
 		}else{
 			module.data.loss++;
 			if (module.data.winners.getKeyByValue(res[0]) != null) module.data.winsLost++;
-			fail();
+			return fail(name);
 		}
 	});
+	looper();
 }
 
 //Remove the failed program, and continue with the next item on the stack.
-function fail(){
+function fail(ele){
+	if(stack.length <= 1) {
+		console.log("Done");
+	}
 	sibCount=0;
-	fs.unlink(path+stack.pop(), function (err) {
+	fs.unlink(path+ele, function (err) {
 		looper();
 	});
 }
@@ -188,13 +203,6 @@ function resetLoop(tempStack, i){
 		fs.unlinkSync(path+tempStack.pop());
 		resetLoop(tempStack,++i);
 	}
-
-}
-
-
-//Make a new executable with id.
-function make(id){
-	runCommand()
 }
 
 //Ask a org a question.
@@ -222,8 +230,9 @@ function runCommand(com,callback){
 	var sys = require('sys')
 	var exec = require('child_process').exec;
 	var child;
-
+	procSize++;
 	child = exec(com, function (error, stdout, stderr) {
+		procSize--;
 	  	if (error !== null) {
 	    	callback(null);
 	  	}else{

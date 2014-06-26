@@ -13,5 +13,6 @@ data.win=0,
 data.loss=0,
 data.difficulty=0,
 data.massExtinctions = 0;
+data.treeSize = 1;
 
 exports.data = data;
