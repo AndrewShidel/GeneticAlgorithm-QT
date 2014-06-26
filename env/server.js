@@ -119,9 +119,9 @@ function looper(){
 		kill();
 	}*/
 
+	//No more than 15 orgs can be run in parallel.
 	if (procSize>15) return setTimeout(function(){looper()},10);
 
-	//var name = stack.slice(-1)[0],
 	var name = stack.pop(),
 		question = module.getQuestion(),
 		newId = nextName(name, false);
