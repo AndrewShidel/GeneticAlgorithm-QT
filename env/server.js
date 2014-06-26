@@ -59,7 +59,9 @@ app.get('/stat/', function(req, res) {
 	html+="<head></head><body><h3>Wins: "+module.data.win+"    Losses: "+module.data.loss+"   Population: "+stack.length+"</h3>";
 	html+="<br><br><h3>Mass Extinctions: "+module.data.massExtinctions+"</h3>"
 	html+="<h3>Difficulty: "+module.data.difficulty+"</h3>"
-	html+="<br><br><h3>Losses Won: "+module.data.lossesWon+"</h3><h3>Wins lost: "+module.data.winsLost+"</h3>"+module.data.treeSize+"<br>"+((new Date()).getTime() - startDate.getTime())
+	html+="<br><br><h3>Losses Won: "+module.data.lossesWon+"</h3><h3>Wins lost: "+module.data.winsLost+"</h3>"
+	html+="<br><br><h3>#Organisms to have existed: "+module.data.treeSize+"</h3>"
+	html+="<h3>Time elapsed(ms): "+((new Date()).getTime() - startDate.getTime())
 	html+="</body></html>";
 	res.send(html);
 });
