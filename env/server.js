@@ -27,23 +27,23 @@ if (process.argv.length > 1 && process.argv[2] != "resume"){
 }
 path=org.substring(0,org.lastIndexOf("/")+1);
 
-//Import the test module.
+//Import the test module.data.
 module = require(tester);
 
 //If server was called with the parameter "resume", then resume from pause.json
 if (process.argv.length > 2 && process.argv[2] == "resume"){
 	resuming = true;
 	var mod = JSON.parse(fs.readFileSync("pause.json"));
-	module.winners = mod.winners
-	module.lossers = mod.lossers
-	module.numWinners = mod.numWinners
-	module.numLossers = mod.numLossers
-	module.lossesWon = mod.lossesWon
-	module.winsLost=mod.winsLost
-	module.win=mod.win
-	module.loss=mod.loss
-	module.difficulty=mod.difficulty
-	module.massExtinctions = mod.massExtinctions
+	module.data.winners = mod.winners
+	module.data.lossers = mod.lossers
+	module.data.numWinners = mod.numWinners
+	module.data.numLossers = mod.numLossers
+	module.data.lossesWon = mod.lossesWon
+	module.data.winsLost=mod.winsLost
+	module.data.win=mod.win
+	module.data.loss=mod.loss
+	module.data.difficulty=mod.difficulty
+	module.data.massExtinctions = mod.massExtinctions
 	path=mod.path;
 	org=mod.org;
 	stack = mod.stack;
@@ -53,10 +53,10 @@ if (process.argv.length > 2 && process.argv[2] == "resume"){
 //Generate some HTML to display statistics.
 app.get('/stat/', function(req, res) {
 	var html = "<html>"
-	html+="<head></head><body><h3>Wins: "+module.win+"    Losses: "+module.loss+"   Population: "+stack.length+"</h3>";
-	html+="<br><br><h3>Mass Extinctions: "+module.massExtinctions+"</h3>"
-	html+="<h3>Difficulty: "+module.difficulty+"</h3>"
-	html+="<br><br><h3>Losses Won: "+module.lossesWon+"</h3><h3>Wins lost: "+module.winsLost+"</h3>"
+	html+="<head></head><body><h3>Wins: "+module.data.win+"    Losses: "+module.data.loss+"   Population: "+stack.length+"</h3>";
+	html+="<br><br><h3>Mass Extinctions: "+module.data.massExtinctions+"</h3>"
+	html+="<h3>Difficulty: "+module.data.difficulty+"</h3>"
+	html+="<br><br><h3>Losses Won: "+module.data.lossesWon+"</h3><h3>Wins lost: "+module.data.winsLost+"</h3>"
 	html+="</body></html>";
 	res.send(html);
 });
@@ -75,10 +75,10 @@ process.stdin.on('readable', function() {
 //Saves the state of execution in "pause.json", and exits the program.
 function pause(){
 	console.log("pausing...");
-	module.stack = stack;
-	module.sibCount = sibCount;
-	module.path=path;
-	module.org=org;
+	module.data.stack = stack;
+	module.data.sibCount = sibCount;
+	module.data.path=path;
+	module.data.org=org;
 	fs.writeFileSync("pause.json", JSON.stringify(module));
 	process.exit(0);
 }
@@ -121,8 +121,8 @@ function looper(){
 		res = res.split("|");
 		
 		if (res[0]==""+module.getAnswer(question)){
-			module.win++
-			if (module.lossers.getKeyByValue(res[0]) != null) module.lossesWon++;
+			module.data.win++
+			if (module.data.lossers.getKeyByValue(res[0]) != null) module.data.lossesWon++;
 			//Make a new org, and make it executable.
 			command = "./maker "+path+" "+newId+" "+name+" "+res[1]+" "+res[2]
 				+" && chmod +x "+path+newId;
@@ -135,10 +135,9 @@ function looper(){
 			});
 			looper();
 		}else{
-			module.loss++;
-			if (module.winners.getKeyByValue(res[0]) != null) module.winsLost++;
+			module.data.loss++;
+			if (module.data.winners.getKeyByValue(res[0]) != null) module.data.winsLost++;
 			fail();
-			
 		}
 	});
 }
@@ -165,7 +164,7 @@ function nextName(parent, newGen){
 
 //Causes a mass extinction, leaving nly alphebet.length number of files.
 function reset(){
-	module.massExtinctions++;
+	module.data.massExtinctions++;
 	console.log("Reseting");
 	var i=0;
 	var tempStack = stack;
