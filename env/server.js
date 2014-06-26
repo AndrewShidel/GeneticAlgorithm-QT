@@ -110,15 +110,12 @@ main();
 
 //Loops to infinity, here is where the bulk of the work is done.
 function looper(){
-	/*if (stack.length == 0){
-		setTimeout(function(){looper()}, 10);
-		return;
-	}*/
 	var diff = ((new Date()).getTime() - startDate.getTime());
-	if (diff > 20000){
+	
+	/*if (diff > 20000){
 		console.log("Time: " + diff + "  Pop: " + module.data.treeSize)
 		kill();
-	}
+	}*/
 
 	if (procSize>15) return setTimeout(function(){looper()},10);
 
