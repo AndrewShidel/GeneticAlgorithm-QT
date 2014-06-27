@@ -193,7 +193,10 @@ function resetLoop(tempStack, i){
 		stack.unshift(alphebet[i]);
 		var temp = path+tempStack.pop();
 		console.log("ran: "+temp);
-		fs.renameSync(temp, path+alphebet[i]);
+
+		try{
+			fs.renameSync(temp, path+alphebet[i]);
+		}catch(e){}
 		resetLoop(tempStack,++i);
 	}
 
