@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h> 
-								
 #define MUTATIONRATE	40000000
 #define INSERTRATE		40000000
 

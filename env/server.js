@@ -5,14 +5,16 @@ var fs = require('fs'),
 
 app.listen(3000);
 
-var startDate = new Date();
-var procSize = 0;
-
-var alphebet = "0123456789abcdefghijklmnopqrstuvwxyz";
 GLOBAL.stack=new Array();
 stack.push("0");
-var sibCount=0;
-var resuming = false;
+
+var startDate = new Date(),
+	procSize = 0,
+	alphebet = "0123456789abcdefghijklmnopqrstuvwxyz",
+	sibCount=0,
+	resuming = false,
+	reseting = false,
+	stop = false;
 
 //These will be the default command line arguments if none are provided.
 var tester="./0Tester.js", org="../org/0/0.c", module="", path="";
@@ -55,13 +57,16 @@ if (process.argv.length > 2 && process.argv[2] == "resume"){
 
 //Generate some HTML to display statistics.
 app.get('/stat/', function(req, res) {
+	var diff = ((new Date()).getTime() - startDate.getTime());
 	var html = "<html>"
 	html+="<head></head><body><h3>Wins: "+module.data.win+"    Losses: "+module.data.loss+"   Population: "+stack.length+"</h3>";
 	html+="<br><br><h3>Mass Extinctions: "+module.data.massExtinctions+"</h3>"
 	html+="<h3>Difficulty: "+module.data.difficulty+"</h3>"
 	html+="<br><br><h3>Losses Won: "+module.data.lossesWon+"</h3><h3>Wins lost: "+module.data.winsLost+"</h3>"
+	html+="<br><br><h3>Generations: "+(stack[stack.length-1].length+(255*module.data.massExtinctions))
+	html+="</h3><h3>p/s: "+(module.data.treeSize/(diff/1000))+"</h3>"
 	html+="<br><br><h3>#Organisms to have existed: "+module.data.treeSize+"</h3>"
-	html+="<h3>Time elapsed(ms): "+((new Date()).getTime() - startDate.getTime())
+	html+="<h3>Time elapsed(ms): "+diff
 	html+="</body></html>";
 	res.send(html);
 });
@@ -73,23 +78,42 @@ process.stdin.on('readable', function() {
   if (chunk !== null) {
     if (chunk == "pause\n") pause();
     else if (chunk == "kill\n") kill();
+    else if (chunk == "reset\n") reset();
+    else if (chunk.indexOf("code:") > -1) eval(chunk.split(":")[1]);
+    else if (chunk.indexOf("codel:") > -1) console.log(eval(chunk.split(":")[1]));
     else console.log("Error: "+chunk.substring(0,chunk.length-1)+" is not a valid command.");
   }
 });
 
 //Saves the state of execution in "pause.json", and exits the program.
-function pause(){
+function pause(count){
+	stop = true;
 	console.log("pausing...");
+
+	count = count||0;
+
+	if (count < 200)
+		if (procSize != 0) 
+			return setTimeout(function(){pause(++count)}, 10);
+
 	module.data.stack = stack;
 	module.data.sibCount = sibCount;
 	module.data.path=path;
 	module.data.org=org;
-	fs.writeFileSync("pause.json", JSON.stringify(module));
+	fs.writeFileSync("pause.json", JSON.stringify(module.data));
 	process.exit(0);
 }
 
 //Kills the current enviroment, erasing all program data.
-function kill(){
+function kill(count){
+	stop = true;
+
+	count = count||0;
+
+	if (count < 200)
+		if (procSize != 0) 
+			return setTimeout(function(){kill(++count)}, 10);
+
 	console.log("Killing the program...");
 	runCommand("make reset", function(){
 		process.exit(0);
@@ -104,7 +128,7 @@ function main(){
 		var command = "gcc -o "+path+"0 "+org+" && g++ -o maker maker.cpp";
 		console.log(command);
 		runCommand(command,function(){
-			looper(0);
+			looper();
 		});
 	}
 }
@@ -112,6 +136,7 @@ main();
 
 //Loops to infinity, here is where the bulk of the work is done.
 function looper(){
+	if (stop) return;
 	var diff = ((new Date()).getTime() - startDate.getTime());
 	
 	/*if (diff > 20000){
@@ -126,7 +151,7 @@ function looper(){
 		question = module.getQuestion(),
 		newId = nextName(name, false);
 	if (newId==null) return fail(name);
-	if (newId.length>=250) {reset(); return;}
+	if (newId.length>=250 && !reseting) {reset(); return;}
 	ask( name,question, function(res){
 		if (res==null || res==undefined || res=="") {
 			return fail(name);
@@ -155,9 +180,6 @@ function looper(){
 
 //Remove the failed program, and continue with the next item on the stack.
 function fail(ele){
-	if(stack.length <= 1) {
-		console.log("Done");
-	}
 	sibCount=0;
 	fs.unlink(path+ele, function (err) {
 		looper();
@@ -177,13 +199,24 @@ function nextName(parent, newGen){
 }
 
 //Causes a mass extinction, leaving nly alphebet.length number of files.
-function reset(){
+function reset(count){
+	stop = true;
+
+	count = count||0;
+	reseting = true;
+
+	if (count < 200)
+		if (procSize != 0) 
+			return setTimeout(function(){reset(++count)}, 10);
+
 	module.data.massExtinctions++;
 	console.log("Reseting");
 	var i=0;
 	var tempStack = stack;
 	stack=[];
 	resetLoop(tempStack, 0);
+	reseting = false;
+	stop = false;
 	looper();
 }
 
@@ -192,8 +225,6 @@ function resetLoop(tempStack, i){
 	if (tempStack.length>0 && i<alphebet.length){
 		stack.unshift(alphebet[i]);
 		var temp = path+tempStack.pop();
-		console.log("ran: "+temp);
-
 		try{
 			fs.renameSync(temp, path+alphebet[i]);
 		}catch(e){}
@@ -202,12 +233,14 @@ function resetLoop(tempStack, i){
 
 	//Delete the remaining files.
 	if (tempStack.length>0){
-		fs.unlinkSync(path+tempStack.pop());
+		try{
+			fs.unlinkSync(path+tempStack.pop());
+		}catch(e){}
 		resetLoop(tempStack,++i);
 	}
 }
 
-//Ask a org a question.
+//Ask an org a question.
 function ask(askId, question, callback){
 	//Ask the question
 	var command = path+askId+" "+askId+" "+question;
