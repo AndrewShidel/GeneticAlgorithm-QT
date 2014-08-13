@@ -14,7 +14,7 @@
 
 class GE{
 	public:
-		GE(std::string _baseDir, std::string (*_blackBox)(std::string), std::vector<std::string> questions);
+        GE(std::string _baseDir, std::string (*_blackBox)(std::string), std::vector<std::string> _questions);
 		void start();
 		void pause();
 		void stop();

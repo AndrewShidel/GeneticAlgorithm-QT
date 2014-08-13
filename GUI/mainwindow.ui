@@ -27,7 +27,7 @@
      <string>+ NEW</string>
     </property>
    </widget>
-   <widget class="QToolButton" name="toolButton_2">
+   <widget class="QToolButton" name="open_button">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -66,7 +66,7 @@
      <string>RUN</string>
     </property>
    </widget>
-   <widget class="QToolButton" name="toolButton_4">
+   <widget class="QToolButton" name="save_button">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -143,7 +143,7 @@
      <enum>QTabWidget::Triangular</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="elideMode">
      <enum>Qt::ElideLeft</enum>
@@ -288,15 +288,24 @@ p, li { white-space: pre-wrap; }
         <height>24</height>
        </rect>
       </property>
+      <property name="value">
+       <number>8</number>
+      </property>
      </widget>
      <widget class="QSpinBox" name="spinBox_2">
       <property name="geometry">
        <rect>
         <x>100</x>
         <y>80</y>
-        <width>49</width>
+        <width>91</width>
         <height>24</height>
        </rect>
+      </property>
+      <property name="maximum">
+       <number>10000000</number>
+      </property>
+      <property name="value">
+       <number>1000000</number>
       </property>
      </widget>
      <widget class="QSpinBox" name="spinBox_3">
@@ -304,9 +313,15 @@ p, li { white-space: pre-wrap; }
        <rect>
         <x>100</x>
         <y>130</y>
-        <width>49</width>
+        <width>91</width>
         <height>24</height>
        </rect>
+      </property>
+      <property name="maximum">
+       <number>10000000</number>
+      </property>
+      <property name="value">
+       <number>1000000</number>
       </property>
      </widget>
      <widget class="QLabel" name="label">
@@ -335,13 +350,6 @@ p, li { white-space: pre-wrap; }
        <string>Mutations</string>
       </property>
      </widget>
-     <zorder>listWidget</zorder>
-     <zorder>label_3</zorder>
-     <zorder>spinBox</zorder>
-     <zorder>spinBox_2</zorder>
-     <zorder>spinBox_3</zorder>
-     <zorder>label</zorder>
-     <zorder>label_2</zorder>
     </widget>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
@@ -349,17 +357,6 @@ p, li { white-space: pre-wrap; }
      </attribute>
     </widget>
    </widget>
-   <zorder>toolButton</zorder>
-   <zorder>toolButton_2</zorder>
-   <zorder>line</zorder>
-   <zorder>toolButton_3</zorder>
-   <zorder>toolButton_4</zorder>
-   <zorder>toolButton_5</zorder>
-   <zorder>toolButton_6</zorder>
-   <zorder>line_2</zorder>
-   <zorder>tabWidget</zorder>
-   <zorder>tabWidget_2</zorder>
-   <zorder>tabWidget_2</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
