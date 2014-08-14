@@ -22,9 +22,12 @@ private slots:
 
     void on_save_button_clicked();
 
+    void on_run_button_clicked();
+
 private:
     Ui::MainWindow *ui;
-    void compileMain();
+    bool compileMain();
+    void writeToConsole(QString content);
 };
 
 #endif // MAINWINDOW_H

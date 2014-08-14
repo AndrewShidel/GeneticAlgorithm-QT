@@ -19,6 +19,9 @@ LIBS += -L/usr/local/lib -lboost_system\
         ../Algorithm/GE.o\
         ../Algorithm/Maker.o
 
+RESOURCES = application.qrc \
+    application.qrc
+
 SOURCES += main.cpp\
         mainwindow.cpp\
     newproject.cpp \
@@ -40,5 +43,8 @@ QMAKE_CXXFLAGS += -stdlib=libc++
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_CXXFLAGS += -mmacosx-version-min=10.7
 QMAKE_LFLAGS += -mmacosx-version-min=10.7
+
+OTHER_FILES += \
+    ../Algorithm/GE.o
 
 

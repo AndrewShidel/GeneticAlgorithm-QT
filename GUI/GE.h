@@ -14,7 +14,7 @@
 
 class GE{
 	public:
-        GE(std::string _baseDir, std::string (*_blackBox)(std::string), std::string (*_getQuestions)(int), int _numQuestions);
+        GE(std::string _baseDir, std::string (*_blackBox)(std::string), std::vector<std::string> _questions);
 		void start();
 		void pause();
 		void stop();
@@ -28,8 +28,7 @@ class GE{
 		static void* startThread(void *args);
 		std::string (*blackBox)(std::string);
 		void initialize();
-		std::string (*getQuestions)(int);
-		int numQuestions;
+		std::vector<std::string> questions;
 		std::vector<int> winners;
 		std::vector<int> lossers;
 		std::string exec(const char* cmd);

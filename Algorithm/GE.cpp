@@ -6,10 +6,11 @@
 
 using namespace boost::filesystem;
 
-GE::GE(std::string _baseDir, std::string (*_blackBox)(std::string), std::vector<std::string> _questions){
+GE::GE(std::string _baseDir, std::string (*_blackBox)(std::string), std::string (*_getQuestions)(int), int _numQuestions){
 	blackBox = _blackBox;
-	questions = _questions;
+	getQuestions = _getQuestions;
 	baseDir=_baseDir;
+	numQuestions = _numQuestions;
 }
 
 void GE::start(){
@@ -28,13 +29,13 @@ void GE::start(){
 
 void GE::initialize(){
 	std::cout << "Initializing:\n";
-	for (int i=0; i<questions.size(); ++i){
+	for (int i=0; i<numQuestions; ++i){
 
-		std::cout << "\r" << (int)((i/(float)questions.size())*100) << "% completed: ";
+		std::cout << "\r" << (int)((i/(float)numQuestions)*100) << "% completed: ";
 		std::cout.flush();
-
-		std::string response = ask(questions[i], "0");
-		if (response == blackBox(questions[i]))
+		std::string question = getQuestions(i);
+		std::string response = ask(question, "0");
+		if (response == blackBox(question))
 			winners.push_back(i);
 		else
 			lossers.push_back(i);
