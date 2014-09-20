@@ -2,3 +2,8 @@ build-GUI-Desktop_Qt_5_3_clang_64bit-Debug/
 build-GUI-Desktop_Qt_5_3_clang_64bit-Release/
 UserSpace/
 *.o
+Algorithm/GEtester
+UserSpace/
+Algorithm/GEtester.dSYM/
+.DS_Store
+Algorithm/_main.cpp
