@@ -1,4 +1,5 @@
 #include "newproject.h"
+#include "mainwindow.h"
 #include "ui_newproject.h"
 #include "GE.h"
 #include <stdlib.h>
@@ -8,14 +9,16 @@
 std::string projectName;
 std::string projectPath;
 std::string pathWithoutProjectName;
-void (*onClose)(std::string, std::string);
+void (*onClose)(std::string, std::string,bool);
 
-newProject::newProject(QWidget *parent, void (*_close)(std::string, std::string)) :
+
+newProject::newProject(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::newProject)
 {
     ui->setupUi(this);
-    onClose=_close;
+    //onClose=_close;
+
 }
 
 newProject::~newProject()
@@ -25,10 +28,16 @@ newProject::~newProject()
 
 void newProject::on_create_button_clicked()
 {
+
     projectName = ui->lineEdit->text().toStdString();
     projectPath = pathWithoutProjectName+"/"+projectName;
     mkdir(projectPath.c_str(), 0777);
-    onClose(projectName, projectPath);
+    //onClose(projectName, projectPath,false;);
+
+    MainWindow *w=static_cast<MainWindow*>(this->parentWidget());
+    //w->onNewClose(projectName, projectPath,false);
+
+    //((MainWindow *)this->parent())->onNewClose(projectName, projectPath,false);
 
     std::ofstream logfile;
     logfile.open ("projects", std::fstream::app);

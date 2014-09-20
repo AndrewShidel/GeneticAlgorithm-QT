@@ -2,6 +2,7 @@
 #define NEWPROJECT_H
 
 #include <QDialog>
+#include "mainwindow.h"
 
 namespace Ui {
 class newProject;
@@ -12,7 +13,7 @@ class newProject : public QDialog
     Q_OBJECT
 
 public:
-    explicit newProject(QWidget *parent = 0,void (*_close)(std::string, std::string)=NULL);
+    explicit newProject(QWidget *parent = 0);
     ~newProject();
 
 private slots:

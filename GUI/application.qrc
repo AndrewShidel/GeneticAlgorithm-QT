@@ -3,5 +3,7 @@
         <file alias="GE.o">../Algorithm/GE.o</file>
         <file alias="GE.h">../Algorithm/GE.h</file>
         <file alias="Maker.o">../Algorithm/Maker.o</file>
+        <file alias="statTracker.o">../Algorithm/statTracker.o</file>
+        <file alias="statTracker.h">../Algorithm/statTracker.h</file>
     </qresource>
 </RCC>

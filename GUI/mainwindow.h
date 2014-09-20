@@ -14,6 +14,12 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    /*void onNewClose(std::string,std::string, bool);*/
+    void *runMain();
+    static void *runHelper(void *classRef)
+    {
+        return ((MainWindow *)classRef)->runMain();
+    }
 
 private slots:
     void on_toolButton_clicked();
@@ -28,6 +34,12 @@ private:
     Ui::MainWindow *ui;
     bool compileMain();
     void writeToConsole(QString content);
+    void sizer();
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+    void resizeEvent(QResizeEvent* event);
+
 };
 
 #endif // MAINWINDOW_H

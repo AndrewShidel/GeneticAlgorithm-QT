@@ -127,7 +127,7 @@
       <x>220</x>
       <y>50</y>
       <width>941</width>
-      <height>471</height>
+      <height>361</height>
      </rect>
     </property>
     <property name="contextMenuPolicy">
@@ -173,7 +173,7 @@
         <x>0</x>
         <y>0</y>
         <width>941</width>
-        <height>451</height>
+        <height>341</height>
        </rect>
       </property>
       <property name="html">
@@ -212,7 +212,7 @@ p, li { white-space: pre-wrap; }
         <x>0</x>
         <y>0</y>
         <width>941</width>
-        <height>451</height>
+        <height>341</height>
        </rect>
       </property>
       <property name="html">
@@ -393,7 +393,7 @@ p, li { white-space: pre-wrap; }
    <property name="minimumSize">
     <size>
      <width>1157</width>
-     <height>154</height>
+     <height>202</height>
     </size>
    </property>
    <attribute name="dockWidgetArea">
@@ -405,17 +405,6 @@ p, li { white-space: pre-wrap; }
       <widget class="QTextBrowser" name="console"/>
      </item>
     </layout>
-    <widget class="QWidget" name="verticalLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>2</width>
-       <height>2</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout"/>
-    </widget>
    </widget>
   </widget>
   <action name="actionSub_item_1">

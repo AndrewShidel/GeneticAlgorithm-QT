@@ -1,4 +1,5 @@
 #include "openproject.h"
+#include "mainwindow.h"
 #include "ui_openproject.h"
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -6,11 +7,12 @@
 #include <vector>
 //#include <map>
 
-void (*onClose2)(std::string, std::string);
-int selected=0;
-std::vector<std::pair<std::string, std::string>> project;
+void (*onClose2)(std::string, std::string, bool open);
 
-OpenProject::OpenProject(QWidget *parent, void (*_close)(std::string, std::string)) :
+int selected=0;
+std::vector<std::pair<std::string, std::string> > project;
+
+OpenProject::OpenProject(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::OpenProject)
 {
@@ -44,7 +46,8 @@ OpenProject::OpenProject(QWidget *parent, void (*_close)(std::string, std::strin
     //stdModel->appendRow(new QStandardItem("New item"));
     ui->listView_2->setModel(stdModel);
 
-    onClose2 = _close;
+    //onClose2 = _close;
+
 }
 
 OpenProject::~OpenProject()
@@ -57,7 +60,9 @@ void OpenProject::on_buttonBox_accepted()
     //int row = ui->listView_2->currentIndex().QModelIndex.row();
     int row2 = selected;
 
-    onClose2(project[row2].first, project[row2].second);
+    //onClose2(project[row2].first, project[row2].second, true);
+    MainWindow *w=static_cast<MainWindow*>(this->parentWidget());
+    //w->onNewClose(project[row2].first, project[row2].second, true);
     //close()
 
 }

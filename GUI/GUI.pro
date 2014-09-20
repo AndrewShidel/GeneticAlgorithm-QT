@@ -11,40 +11,33 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = GUI
 TEMPLATE = app
 
-INCLUDEPATH += ../Algorithm\
-                /usr/local/include/boost/
-
-LIBS += -L/usr/local/lib -lboost_system\
-        -L/usr/local/lib -lboost_filesystem\
-        ../Algorithm/GE.o\
-        ../Algorithm/Maker.o
+INCLUDEPATH += ../Algorithm
 
 RESOURCES = application.qrc \
     application.qrc
 
+
 SOURCES += main.cpp\
         mainwindow.cpp\
     newproject.cpp \
-    openproject.cpp
+    openproject.cpp \
+    rundialog.cpp \
+    tracker.cpp
 
 HEADERS  += mainwindow.h\
         ../Algorithm/Maker.h\
         ../Algorithm/GE.h \
     newproject.h \
-    openproject.h
+    openproject.h \
+    rundialog.h \
+    tracker.h
 
 FORMS    += mainwindow.ui \
     newproject.ui \
-    openproject.ui
-
-CONFIG += -stdlib=libc++\
-           c++11\
-QMAKE_CXXFLAGS += -stdlib=libc++
-QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CXXFLAGS += -mmacosx-version-min=10.7
-QMAKE_LFLAGS += -mmacosx-version-min=10.7
+    openproject.ui \
+    rundialog.ui
 
 OTHER_FILES += \
+    ../Algorithm/statTracker.o\
     ../Algorithm/GE.o
-
 

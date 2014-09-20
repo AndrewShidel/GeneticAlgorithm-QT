@@ -2,6 +2,7 @@
 #define OPENPROJECT_H
 
 #include <QDialog>
+#include "mainwindow.h"
 
 namespace Ui {
 class OpenProject;
@@ -12,7 +13,7 @@ class OpenProject : public QDialog
     Q_OBJECT
 
 public:
-    explicit OpenProject(QWidget *parent = 0, void (*_close)(std::string, std::string)=NULL);
+    explicit OpenProject(QWidget *parent = 0);
     ~OpenProject();
 
 private slots:
