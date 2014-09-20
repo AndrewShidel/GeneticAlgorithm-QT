@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
+#include <map>
 #include "GE.h"
+#include "Maker.h"
 
 #define NUM_QUESTIONS 100;
 
@@ -20,12 +22,13 @@ std::string BlackBox(std::string question){
 	return std::to_string(iBlackBox(i)); //Ignore this error.
 }
 std::string getQuestion(int i){
-	return "";
+	return std::to_string(i); //Ignore this error
 }
+
 
 int main(){
 	std::vector<std::string> questions;
-	GE test = GE("./orgs/", &BlackBox, &getQuestion, NUM_QUESTIONS);
+	GE test = GE("/Users/andrew/Documents/GeneticAlgorithm-QT/Algorithm/orgs/", &BlackBox, &getQuestion, 100);
 	test.start();
 	return 0;
 }
